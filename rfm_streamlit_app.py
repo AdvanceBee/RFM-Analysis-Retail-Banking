@@ -33,52 +33,27 @@ def generate_cluster_insight(recency, frequency, monetary):
     else:
         return "📌 Moderate Activity Customers"
 
-# ---- Upload RFM Data ----
+# Upload and store RFM file
+if "rfm_data" not in st.session_state:
+    st.session_state.rfm_data = None
+
 if app_mode == "Upload RFM File":
-    st.subheader("📁 Upload Your RFM File")
-    uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"])
+    uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"], key="rfm_upload")
 
     if uploaded_file:
         rfm = pd.read_csv(uploaded_file)
-        st.session_state.rfm = rfm
-        st.success("File uploaded and stored in session!")
+        st.session_state.rfm_data = rfm
+        st.success("✅ RFM data uploaded and stored!")
         st.dataframe(rfm.head())
+    elif st.session_state.rfm_data is not None:
+        st.info("📄 Previously uploaded data:")
+        st.dataframe(st.session_state.rfm_data.head())
     else:
-        st.info(":file_folder: Please upload a CSV file in this section.")
+        st.warning("📁 Please upload a CSV file.")
 
-# ---- Upload Raw Transactions & Compute RFM ----
-elif app_mode == "Upload Raw Transactions":
-    st.subheader("🔄 Upload Raw Transactions to Compute RFM")
-    raw_file = st.file_uploader("Upload raw transactions (CustomerID, InvoiceDate, Amount)", type=["csv"], key="raw")
+# Use rfm from session state in other tabs
+rfm = st.session_state.get("rfm_data", None)
 
-    if raw_file:
-        raw_df = pd.read_csv(raw_file, parse_dates=["InvoiceDate"])
-        st.dataframe(raw_df.head())
-
-        try:
-            ref_date = raw_df["InvoiceDate"].max() + pd.Timedelta(days=1)
-            rfm = raw_df.groupby("CustomerID").agg({
-                "InvoiceDate": "count",
-                "Amount": "sum"
-            }).rename(columns={
-                "InvoiceDate": "Frequency",
-                "Amount": "Monetary"
-            })
-
-            rfm["Recency"] = raw_df.groupby("CustomerID")["InvoiceDate"].apply(lambda x: (ref_date - x.max()).days)
-
-            rfm["R_Score"] = pd.qcut(rfm["Recency"], 4, labels=[4, 3, 2, 1])
-            rfm["F_Score"] = pd.qcut(rfm["Frequency"].rank(method="first"), 4, labels=[1, 2, 3, 4])
-            rfm["M_Score"] = pd.qcut(rfm["Monetary"], 4, labels=[1, 2, 3, 4])
-            rfm["RFM_Score"] = rfm["R_Score"].astype(str) + rfm["F_Score"].astype(str) + rfm["M_Score"].astype(str)
-
-            st.session_state.rfm = rfm
-            st.success("RFM computed and stored in session!")
-            st.dataframe(rfm.reset_index())
-        except Exception as e:
-            st.error(f"Error processing raw data: {e}")
-    else:
-        st.info(":file_folder: Please upload raw transaction CSV.")
 
 # ---- Explore Clusters ----
 elif app_mode == "Explore Clusters":
