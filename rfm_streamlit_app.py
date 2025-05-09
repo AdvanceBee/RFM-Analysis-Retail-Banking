@@ -96,4 +96,5 @@ else:
     if st.download_button("Download RFM data as CSV", data=csv, file_name="rfm_segmented_output.csv", mime="text/csv"):
         st.success("✅ Download started! Check your browser.")
         else:
+        
     st.info("📂 Please upload a CSV file to begin.")
