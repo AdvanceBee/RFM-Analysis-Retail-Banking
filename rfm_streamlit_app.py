@@ -72,9 +72,9 @@ if uploaded_file:
 
 else:
                 st.warning("⚠️ No records found for this cluster.")
-    else:
+else:
             st.warning("⚠️ No cluster options available in your data.")
-    else:
+else:
         st.warning("⚠️ Cluster column not found in your data.")
 
     # Scatter plot
