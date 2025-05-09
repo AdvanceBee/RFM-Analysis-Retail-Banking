@@ -149,28 +149,33 @@ elif app_mode == "Visualizations":
     else:
         st.info("📂 Please upload and prepare your data in earlier steps.")
 
-# Horizontal Bar Chart - Customer Count by Segment or Cluster
+# ---- Horizontal Bar Chart - Customer Count by Segment or Cluster ----
 st.subheader("📊 Customer Counts per Segment / Cluster")
 
-if 'Segment' in rfm.columns:
-    count_data = rfm['Segment'].value_counts().sort_values().reset_index()
-    count_data.columns = ['Segment', 'Count']
+if 'rfm' in locals():
+    if 'Segment' in rfm.columns:
+        count_data = rfm['Segment'].value_counts().sort_values().reset_index()
+        count_data.columns = ['Segment', 'Count']
 
-    fig4, ax4 = plt.subplots(figsize=(10, 5))
-    sns.barplot(data=count_data, y='Segment', x='Count', palette='Blues_d', ax=ax4)
-    ax4.set_title("Customer Count by Segment")
-    st.pyplot(fig4)
+        fig4, ax4 = plt.subplots(figsize=(10, 5))
+        sns.barplot(data=count_data, y='Segment', x='Count', palette='Blues_d', ax=ax4)
+        ax4.set_title("Customer Count by Segment")
+        st.pyplot(fig4)
 
-elif 'Cluster' in rfm.columns:
-    count_data = rfm['Cluster'].value_counts().sort_values().reset_index()
-    count_data.columns = ['Cluster', 'Count']
+    elif 'Cluster' in rfm.columns:
+        count_data = rfm['Cluster'].value_counts().sort_values().reset_index()
+        count_data.columns = ['Cluster', 'Count']
 
-    fig4, ax4 = plt.subplots(figsize=(10, 5))
-    sns.barplot(data=count_data, y='Cluster', x='Count', palette='viridis', ax=ax4)
-    ax4.set_title("Customer Count by Cluster")
-    st.pyplot(fig4)
+        fig4, ax4 = plt.subplots(figsize=(10, 5))
+        sns.barplot(data=count_data, y='Cluster', x='Count', palette='viridis', ax=ax4)
+        ax4.set_title("Customer Count by Cluster")
+        st.pyplot(fig4)
+
+    else:
+        st.warning("⚠️ No 'Segment' or 'Cluster' column available to show counts.")
 else:
-    st.warning("⚠️ No 'Segment' or 'Cluster' column available to show counts.")
+    st.info("📁 Please upload and process RFM data to view segment/cluster counts.")
+
 
 # ---- Download & Summary ----
 if app_mode == "Download & Summary":
