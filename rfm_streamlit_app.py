@@ -44,6 +44,10 @@ if uploaded_file:
 
         st.write(f"Showing {len(filtered_df)} customers in Cluster {selected_cluster}")
         st.dataframe(filtered_df.head())
+            # Show segment name for selected cluster
+    segment_name = filtered_df['Segment'].iloc[0]
+    st.success(f"🧠 Segment: **{segment_name}**")
+
     else:
         st.warning("⚠️ Cluster column not found in your data.")
 
@@ -70,6 +74,11 @@ if uploaded_file:
         axes[2].set_title('Monetary')
 
         st.pyplot(fig2)
+    # Summary stats by cluster
+    st.subheader("📋 RFM Summary by Cluster")
+
+    summary = rfm.groupby(['Cluster', 'Segment'])[['Recency', 'Frequency', 'Monetary']].mean().round(1)
+    st.dataframe(summary.reset_index())
 
     # Download button
     st.markdown("---")
