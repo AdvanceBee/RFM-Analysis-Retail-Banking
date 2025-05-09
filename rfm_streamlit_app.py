@@ -1,4 +1,4 @@
-import streamlit as st
+    import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -30,15 +30,34 @@ if uploaded_file:
     with col3:
         st.metric("💰 Avg. Monetary", f"${rfm['Monetary'].mean():,.2f}")
 
-    # Cluster filter
-    st.markdown("---")
-    st.subheader("🎯 Filter by Customer Cluster")
+      # Cluster filter section
+st.markdown("---")
+st.subheader("🎯 Filter by Customer Cluster")
 
-    if 'Cluster' in rfm.columns:
+if 'Cluster' in rfm.columns:
+    cluster_options = sorted(rfm['Cluster'].dropna().unique())
+    
+    if cluster_options:
         selected_cluster = st.selectbox(
             "Select a cluster to explore:",
-            sorted(rfm['Cluster'].unique())
+            cluster_options
         )
+
+        filtered_df = rfm[rfm['Cluster'] == selected_cluster]
+
+        if not filtered_df.empty:
+            st.dataframe(filtered_df.head())
+
+            if 'Segment' in filtered_df.columns:
+                segment_name = filtered_df['Segment'].iloc[0]
+                st.markdown(f"🔎 **{len(filtered_df):,} customers** in **Cluster {selected_cluster}** — Segment: **{segment_name}**")
+        else:
+            st.warning("⚠️ No records found for this cluster.")
+    else:
+        st.warning("⚠️ No cluster options available in your data.")
+else:
+    st.warning("⚠️ Cluster column not found in your data.")
+
 
     # Scatter plot
     st.subheader("📊 Recency vs Frequency by Cluster")
