@@ -10,6 +10,18 @@ st.set_page_config(page_title="RFM Customer Segmentation", layout="wide")
 st.title("📊 RFM Customer Segmentation App")
 st.markdown("Upload your RFM dataset (must include Recency, Frequency, Monetary, and Cluster columns).")
 
+def generate_cluster_insight(recency, frequency, monetary):
+    if recency < 30 and frequency >= 3 and monetary > 3000:
+        return "🔥 Loyal & High-Value Customers"
+    elif recency > 60 and frequency <= 1:
+        return "⏳ At Risk or Churned Customers"
+    elif frequency > 2 and monetary < 1000:
+        return "💡 Engaged but Low Spending"
+    elif recency < 40 and frequency == 1:
+        return "🧪 New or One-Time Shoppers"
+    else:
+        return "📌 Moderate Activity Customers"
+
 # File uploader
 uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"])
 
@@ -51,6 +63,13 @@ if uploaded_file:
                 if 'Segment' in filtered_df.columns:
                     segment_name = filtered_df['Segment'].iloc[0]
                     st.markdown(f"🔎 **{len(filtered_df):,} customers** in **Cluster {selected_cluster}** — Segment: **{segment_name}**")
+    avg_r = filtered_df['Recency'].mean()
+    avg_f = filtered_df['Frequency'].mean()
+    avg_m = filtered_df['Monetary'].mean()
+
+    insight = generate_cluster_insight(avg_r, avg_f, avg_m)
+    st.info(f"📊 **Insight**: {insight}")
+
             else:
                 st.warning("⚠️ No records found for this cluster.")
         else:
