@@ -55,7 +55,7 @@ if uploaded_file:
 
             filtered_df = rfm[rfm['Cluster'] == selected_cluster]
 
-                  if not filtered_df.empty:
+            if not filtered_df.empty:
                 st.dataframe(filtered_df.head())
 
                 segment_name = filtered_df['Segment'].iloc[0] if 'Segment' in filtered_df.columns else "N/A"
@@ -70,16 +70,6 @@ if uploaded_file:
                     st.info(f"📊 **Insight**: {insight}")
                 except Exception as e:
                     st.warning("⚠️ Could not generate insight. Please check column names and data.")
-
-
-                # Smart cluster insight
-                avg_r = filtered_df['Recency'].mean()
-                avg_f = filtered_df['Frequency'].mean()
-                avg_m = filtered_df['Monetary'].mean()
-
-                insight = generate_cluster_insight(avg_r, avg_f, avg_m)
-                st.info(f"📊 **Insight**: {insight}")
-
             else:
                 st.warning("⚠️ No records found for this cluster.")
         else:
