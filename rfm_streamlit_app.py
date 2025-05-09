@@ -173,6 +173,7 @@ else:
     st.warning("⚠️ No 'Segment' or 'Cluster' column available to show counts.")
 
 # ---- Download & Summary ----
+
 elif app_mode == "Download & Summary":
     if 'rfm' in locals():
         if 'Segment' in rfm.columns:
