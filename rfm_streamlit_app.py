@@ -10,6 +10,7 @@ st.set_page_config(page_title="RFM Customer Segmentation", layout="wide")
 st.title("📊 RFM Customer Segmentation App")
 st.markdown("Upload your RFM dataset (must include Recency, Frequency, Monetary, and Cluster columns).")
 
+# Insight logic function
 def generate_cluster_insight(recency, frequency, monetary):
     if recency < 30 and frequency >= 3 and monetary > 3000:
         return "🔥 Loyal & High-Value Customers"
@@ -50,10 +51,7 @@ if uploaded_file:
         cluster_options = sorted(rfm['Cluster'].dropna().unique())
 
         if cluster_options:
-            selected_cluster = st.selectbox(
-                "Select a cluster to explore:",
-                cluster_options
-            )
+            selected_cluster = st.selectbox("Select a cluster to explore:", cluster_options)
 
             filtered_df = rfm[rfm['Cluster'] == selected_cluster]
 
@@ -63,18 +61,20 @@ if uploaded_file:
                 if 'Segment' in filtered_df.columns:
                     segment_name = filtered_df['Segment'].iloc[0]
                     st.markdown(f"🔎 **{len(filtered_df):,} customers** in **Cluster {selected_cluster}** — Segment: **{segment_name}**")
-    avg_r = filtered_df['Recency'].mean()
-    avg_f = filtered_df['Frequency'].mean()
-    avg_m = filtered_df['Monetary'].mean()
 
-    insight = generate_cluster_insight(avg_r, avg_f, avg_m)
-    st.info(f"📊 **Insight**: {insight}")
+                # Smart cluster insight
+                avg_r = filtered_df['Recency'].mean()
+                avg_f = filtered_df['Frequency'].mean()
+                avg_m = filtered_df['Monetary'].mean()
 
-else:
-                st.warning("⚠️ No records found for this cluster.")
+                insight = generate_cluster_insight(avg_r, avg_f, avg_m)
+                st.info(f"📊 **Insight**: {insight}")
+
             else:
+                st.warning("⚠️ No records found for this cluster.")
+        else:
             st.warning("⚠️ No cluster options available in your data.")
-else:
+    else:
         st.warning("⚠️ Cluster column not found in your data.")
 
     # Scatter plot
