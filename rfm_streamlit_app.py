@@ -13,15 +13,15 @@ st.markdown("Upload your RFM dataset (must include Recency, Frequency, Monetary,
 # Insight logic function
 def generate_cluster_insight(recency, frequency, monetary):
     if recency < 30 and frequency >= 3 and monetary > 3000:
-        return "🔥 Loyal & High-Value Customers"
+        return "🔥 Loyal & High-Value Customers\nThese customers buy frequently and recently. Focus on retention and VIP treatment."
     elif recency > 60 and frequency <= 1:
-        return "⏳ At Risk or Churned Customers"
+        return "⏳ At Risk or Churned Customers\nThey haven't purchased in a while. Consider win-back campaigns or surveys."
     elif frequency > 2 and monetary < 1000:
-        return "💡 Engaged but Low Spending"
+        return "💡 Engaged but Low Spending\nThey visit often but spend little. Upsell, bundle offers, or loyalty points may help."
     elif recency < 40 and frequency == 1:
-        return "🧪 New or One-Time Shoppers"
+        return "🧪 New or One-Time Shoppers\nThese are new or occasional buyers. Welcome them with onboarding offers."
     else:
-        return "📌 Moderate Activity Customers"
+        return "📌 Moderate Activity Customers\nThey’re average across RFM. Use personalized campaigns to boost loyalty."
 
 # File uploader
 uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"])
