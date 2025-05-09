@@ -55,7 +55,7 @@ if uploaded_file:
 
             filtered_df = rfm[rfm['Cluster'] == selected_cluster]
 
-          if not filtered_df.empty:
+        if not filtered_df.empty:
     st.dataframe(filtered_df.head())
 
     segment_name = filtered_df['Segment'].iloc[0] if 'Segment' in filtered_df.columns else "N/A"
