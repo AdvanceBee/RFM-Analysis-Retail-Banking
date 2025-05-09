@@ -70,7 +70,7 @@ if uploaded_file:
     insight = generate_cluster_insight(avg_r, avg_f, avg_m)
     st.info(f"📊 **Insight**: {insight}")
 
-            else:
+else:
                 st.warning("⚠️ No records found for this cluster.")
         else:
             st.warning("⚠️ No cluster options available in your data.")
