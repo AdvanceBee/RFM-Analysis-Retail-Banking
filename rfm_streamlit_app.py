@@ -23,6 +23,53 @@ def generate_cluster_insight(recency, frequency, monetary):
     else:
         return "📌 Moderate Activity Customers\nThey’re average across RFM. Use personalized campaigns to boost loyalty."
 
+# ---- Optional: Upload Raw Data and Compute RFM ----
+st.markdown("## 🔄 Upload Raw Transactions to Compute RFM")
+raw_file = st.file_uploader("Upload raw transactions (CustomerID, InvoiceDate, Amount)", type=["csv"], key="raw")
+
+if raw_file:
+    raw_df = pd.read_csv(raw_file, parse_dates=["InvoiceDate"])
+
+    st.success("Raw data uploaded successfully!")
+    st.dataframe(raw_df.head())
+
+    try:
+        # Reference date: 1 day after the last invoice
+        ref_date = raw_df["InvoiceDate"].max() + pd.Timedelta(days=1)
+
+        # Compute Recency, Frequency, Monetary
+        rfm = raw_df.groupby("CustomerID").agg({
+            "InvoiceDate": lambda x: (ref_date - x.max()).days,
+            "InvoiceDate": "count",
+            "Amount": "sum"
+        }).rename(columns={
+            "InvoiceDate": "Frequency",  # Reassigned later
+            "<lambda_0>": "Recency",     # Fixed naming
+            "Amount": "Monetary"
+        })
+
+        rfm["Recency"] = raw_df.groupby("CustomerID")["InvoiceDate"].apply(lambda x: (ref_date - x.max()).days)
+        rfm = rfm.rename(columns={"InvoiceDate": "Frequency"})
+
+        # Compute RFM scores
+        rfm["R_Score"] = pd.qcut(rfm["Recency"], 4, labels=[4, 3, 2, 1])
+        rfm["F_Score"] = pd.qcut(rfm["Frequency"].rank(method="first"), 4, labels=[1, 2, 3, 4])
+        rfm["M_Score"] = pd.qcut(rfm["Monetary"], 4, labels=[1, 2, 3, 4])
+
+        # Combine for total score
+        rfm["RFM_Score"] = rfm["R_Score"].astype(str) + rfm["F_Score"].astype(str) + rfm["M_Score"].astype(str)
+
+        st.subheader("🎯 Computed RFM Table")
+        st.dataframe(rfm.reset_index())
+
+        # Save processed for download or further use
+        csv = rfm.reset_index().to_csv(index=False)
+        st.download_button("Download Computed RFM CSV", data=csv, file_name="rfm_computed.csv", mime="text/csv")
+
+    except Exception as e:
+        st.error(f"Error processing raw data: {e}")
+
+
 # File uploader
 uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"])
 
