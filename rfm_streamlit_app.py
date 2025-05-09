@@ -173,14 +173,17 @@ else:
     st.warning("⚠️ No 'Segment' or 'Cluster' column available to show counts.")
 
 # ---- Download & Summary ----
-
 elif app_mode == "Download & Summary":
+    st.subheader("📋 RFM Summary by Cluster")
+
     if 'rfm' in locals():
-        if 'Segment' in rfm.columns:
-            st.subheader("📋 RFM Summary by Cluster")
+        if 'Segment' in rfm.columns and 'Cluster' in rfm.columns:
             summary = rfm.groupby(['Cluster', 'Segment'])[['Recency', 'Frequency', 'Monetary']].mean().round(1)
             st.dataframe(summary.reset_index())
+        else:
+            st.warning("⚠️ Columns 'Segment' and 'Cluster' are required for summary view.")
 
+        # Download button
         st.markdown("---")
         st.subheader("📅 Download Segmented Data")
         csv = rfm.to_csv(index=False)
