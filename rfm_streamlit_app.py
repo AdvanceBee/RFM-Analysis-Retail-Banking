@@ -40,18 +40,6 @@ if uploaded_file:
             sorted(rfm['Cluster'].unique())
         )
 
-        filtered_df = rfm[rfm['Cluster'] == selected_cluster]
-
-        st.write(f"Showing {len(filtered_df)} customers in Cluster {selected_cluster}")
-        st.dataframe(filtered_df.head())
-
-        # ✅ Show segment name if column exists
-        if 'Segment' in filtered_df.columns:
-            segment_name = filtered_df['Segment'].iloc[0]
-            st.success(f"🧠 Segment: **{segment_name}**")
-    else:
-        st.warning("⚠️ Cluster column not found in your data.")
-
     # Scatter plot
     st.subheader("📊 Recency vs Frequency by Cluster")
     if 'Cluster' in rfm.columns:
