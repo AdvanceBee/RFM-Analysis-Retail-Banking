@@ -101,6 +101,27 @@ if uploaded_file:
 
         st.pyplot(fig2)
 
+# Pair Plot to show relationships
+st.subheader("🔗 RFM Pair Plot by Cluster")
+if 'Cluster' in rfm.columns:
+    try:
+        # Sample data if too large
+        plot_data = rfm[['Recency', 'Frequency', 'Monetary', 'Cluster']].copy()
+        if len(plot_data) > 1000:
+            plot_data = plot_data.sample(1000, random_state=1)  # speed for large data
+
+        # Cluster must be a string or category for hue
+        plot_data['Cluster'] = plot_data['Cluster'].astype(str)
+
+        sns.set(style="ticks")
+        fig3 = sns.pairplot(data=plot_data, hue='Cluster', palette='viridis', plot_kws={'alpha': 0.6})
+        st.pyplot(fig3)
+    except Exception as e:
+        st.error(f"Error generating pair plot: {e}")
+else:
+    st.warning("⚠️ 'Cluster' column not found for plotting.")
+    
+    
     # Summary stats by cluster
     if 'Segment' in rfm.columns:
         st.subheader("📋 RFM Summary by Cluster")
