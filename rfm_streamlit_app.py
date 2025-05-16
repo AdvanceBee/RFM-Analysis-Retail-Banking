@@ -14,22 +14,30 @@ st.markdown("Upload your dataset and explore RFM segmentation with visual insigh
 if "rfm" not in st.session_state:
     st.session_state.rfm = None
 
-# File uploader for RFM data
+# 📁 Upload or Auto-Load RFM Data
 st.subheader("📁 Upload Your RFM File")
-uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"])
+uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"], key="rfm_upload")
 
-if uploaded_file:
+if uploaded_file is not None:
     rfm = pd.read_csv(uploaded_file)
     st.session_state.rfm = rfm
-    st.success("✅ File uploaded and stored in session!")
+    st.success("✅ File uploaded successfully.")
     st.dataframe(rfm.head())
-elif st.session_state.rfm is not None:
+
+elif os.path.exists("sample_rfm_data.csv"):
+    rfm = pd.read_csv("sample_rfm_data.csv")
+    st.session_state.rfm = rfm
+    st.warning("⚠️ No file uploaded — using sample RFM data.")
+    st.dataframe(rfm.head())
+
+elif st.session_state.get("rfm") is not None:
     rfm = st.session_state.rfm
     st.info("ℹ️ Showing previously uploaded data")
     st.dataframe(rfm.head())
+
 else:
     rfm = None
-    st.warning("📂 Please upload a CSV file to begin.")
+    st.error("❌ No data found. Please upload a CSV file to proceed.")
 
 # Optional: Upload raw transactions to compute RFM
 st.markdown("---")
