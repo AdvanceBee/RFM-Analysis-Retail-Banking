@@ -76,36 +76,24 @@ if raw_file:
         st.error(f"Error processing raw data: {e}")
 
 # Show summary metrics
-if rfm is not None:
+if rfm_df is not None:
     st.markdown("---")
     st.subheader("📌 Summary Metrics")
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("🕒 Avg. Recency", f"{rfm['Recency'].mean():.1f} days")
+        st.metric("🕒 Avg. Recency", f"{rfm_df['Recency'].mean():.1f} days")
     with col2:
-        st.metric("🔁 Avg. Frequency", f"{rfm['Frequency'].mean():.1f} times")
+        st.metric("🔁 Avg. Frequency", f"{rfm_df['Frequency'].mean():.1f} times")
     with col3:
-        st.metric("💰 Avg. Monetary", f"${rfm['Monetary'].mean():,.2f}")
+        st.metric("💰 Avg. Monetary", f"${rfm_df['Monetary'].mean():,.2f}")
 
     # Visual: Horizontal Bar Chart
-    st.markdown("---")
-    st.subheader("📊 Customer Counts per Segment / Cluster")
-    if 'Segment' in rfm.columns:
-        count_data = rfm['Segment'].value_counts().sort_values().reset_index()
-        count_data.columns = ['Segment', 'Count']
-        fig, ax = plt.subplots(figsize=(10, 5))
-        sns.barplot(data=count_data, y='Segment', x='Count', palette='Blues_d', ax=ax)
-        ax.set_title("Customer Count by Segment")
-        st.pyplot(fig)
-    elif 'Cluster' in rfm.columns:
-        count_data = rfm['Cluster'].value_counts().sort_values().reset_index()
-        count_data.columns = ['Cluster', 'Count']
-        fig, ax = plt.subplots(figsize=(10, 5))
-        sns.barplot(data=count_data, y='Cluster', x='Count', palette='viridis', ax=ax)
-        ax.set_title("Customer Count by Cluster")
-        st.pyplot(fig)
-    else:
-        st.warning("⚠️ No 'Segment' or 'Cluster' column available.")
+ if 'Segment' in rfm_df.columns:
+    count_data = rfm_df['Segment'].value_counts().sort_values().reset_index()
+    ...
+elif 'Cluster' in rfm_df.columns:
+    count_data = rfm_df['Cluster'].value_counts().sort_values().reset_index()
+    ...
 
     # Visual: Pair Plot
     st.markdown("---")
