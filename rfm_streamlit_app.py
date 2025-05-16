@@ -11,36 +11,36 @@ st.set_page_config(page_title="RFM Customer Segmentation", layout="wide")
 st.title(":bar_chart: RFM Customer Segmentation App")
 st.markdown("Upload your dataset and explore RFM segmentation with visual insights.")
 
-# Initialize session state for RFM if not exists
-if "rfm" not in st.session_state:
-    st.session_state.rfm = None
+import os
 
+# Upload section
 st.subheader("📁 Upload Your RFM File")
 
 uploaded_file = st.file_uploader("Upload your RFM CSV file", type=["csv"], key="rfm_file")
 
 # Try to read uploaded file
 if uploaded_file is not None:
-    rfm = pd.read_csv(uploaded_file)
-    st.session_state.rfm = rfm
+    rfm_df = pd.read_csv(uploaded_file)
+    st.session_state.rfm = rfm_df
     st.success("✅ File uploaded successfully.")
-    st.dataframe(rfm.head())
+    st.dataframe(rfm_df.head())
 
-# If no upload, check session state
+# If not uploaded, check if session already has RFM
 elif "rfm" in st.session_state:
-    rfm = st.session_state.rfm
+    rfm_df = st.session_state.rfm
     st.info("ℹ️ Showing previously uploaded data")
-    st.dataframe(rfm.head())
+    st.dataframe(rfm_df.head())
 
-# If nothing uploaded and nothing in session, use fallback
+# If neither, try loading the fallback sample file
 elif os.path.exists("sample_rfm_data.csv"):
-    rfm = pd.read_csv("sample_rfm_data.csv")
-    st.session_state.rfm = rfm
+    rfm_df = pd.read_csv("sample_rfm_data.csv")
+    st.session_state.rfm = rfm_df
     st.warning("⚠️ No file uploaded — using sample RFM data.")
-    st.dataframe(rfm.head())
+    st.dataframe(rfm_df.head())
 
+# Nothing to show
 else:
-    rfm = None
+    rfm_df = None
     st.error("❌ No data found. Please upload a CSV file to proceed.")
 
 # Optional: Upload raw transactions to compute RFM
