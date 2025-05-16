@@ -11,8 +11,6 @@ st.set_page_config(page_title="RFM Customer Segmentation", layout="wide")
 st.title(":bar_chart: RFM Customer Segmentation App")
 st.markdown("Upload your dataset and explore RFM segmentation with visual insights.")
 
-import os
-
 # Upload section
 st.subheader("📁 Upload Your RFM File")
 
@@ -75,7 +73,7 @@ if raw_file:
     except Exception as e:
         st.error(f"Error processing raw data: {e}")
 
-# Show summary metrics
+# Show summary metrics and visualizations if data exists
 if rfm_df is not None:
     st.markdown("---")
     st.subheader("📌 Summary Metrics")
@@ -87,31 +85,44 @@ if rfm_df is not None:
     with col3:
         st.metric("💰 Avg. Monetary", f"${rfm_df['Monetary'].mean():,.2f}")
 
-    # Visual: Horizontal Bar Chart
- if 'Segment' in rfm_df.columns:
-    count_data = rfm_df['Segment'].value_counts().sort_values().reset_index()
-    ...
-elif 'Cluster' in rfm_df.columns:
-    count_data = rfm_df['Cluster'].value_counts().sort_values().reset_index()
-    ...
+    # Horizontal bar chart by Segment or Cluster
+    st.markdown("---")
+    st.subheader("📊 Customer Counts per Segment / Cluster")
+    if 'Segment' in rfm_df.columns:
+        count_data = rfm_df['Segment'].value_counts().sort_values().reset_index()
+        count_data.columns = ['Segment', 'Count']
+        fig, ax = plt.subplots(figsize=(10, 5))
+        sns.barplot(data=count_data, y='Segment', x='Count', palette='Blues_d', ax=ax)
+        ax.set_title("Customer Count by Segment")
+        st.pyplot(fig)
+    elif 'Cluster' in rfm_df.columns:
+        count_data = rfm_df['Cluster'].value_counts().sort_values().reset_index()
+        count_data.columns = ['Cluster', 'Count']
+        fig, ax = plt.subplots(figsize=(10, 5))
+        sns.barplot(data=count_data, y='Cluster', x='Count', palette='viridis', ax=ax)
+        ax.set_title("Customer Count by Cluster")
+        st.pyplot(fig)
 
-    # Visual: Pair Plot
+    # Pair Plot
     st.markdown("---")
     st.subheader("🔗 RFM Pair Plot by Cluster")
     try:
-        plot_data = rfm[['Recency', 'Frequency', 'Monetary', 'Cluster']].copy()
-        if len(plot_data) > 1000:
-            plot_data = plot_data.sample(1000)
-        plot_data['Cluster'] = plot_data['Cluster'].astype(str)
-        sns.set(style="ticks")
-        fig_pair = sns.pairplot(data=plot_data, hue='Cluster', palette='viridis', plot_kws={'alpha': 0.6})
-        st.pyplot(fig_pair)
+        if 'Cluster' in rfm_df.columns:
+            plot_data = rfm_df[['Recency', 'Frequency', 'Monetary', 'Cluster']].copy()
+            if len(plot_data) > 1000:
+                plot_data = plot_data.sample(1000)
+            plot_data['Cluster'] = plot_data['Cluster'].astype(str)
+            sns.set(style="ticks")
+            fig_pair = sns.pairplot(data=plot_data, hue='Cluster', palette='viridis', plot_kws={'alpha': 0.6})
+            st.pyplot(fig_pair)
+        else:
+            st.warning("'Cluster' column is required for pair plot.")
     except Exception as e:
         st.error(f"Error generating pair plot: {e}")
 
-    # Download button
+    # Download section
     st.markdown("---")
-    st.subheader("📥 Download Segmented Data")
-    csv = rfm.to_csv(index=False)
+    st.subheader("📅 Download Segmented Data")
+    csv = rfm_df.to_csv(index=False)
     if st.download_button("Download RFM data as CSV", data=csv, file_name="rfm_segmented_output.csv", mime="text/csv"):
         st.success("✅ Download started! Check your browser.")
