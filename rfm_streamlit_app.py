@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 # App layout config
 st.set_page_config(page_title="RFM Customer Segmentation", layout="wide")
